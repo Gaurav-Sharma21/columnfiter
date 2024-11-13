@@ -23,18 +23,13 @@ else:
 #Function to detect dilimiter 
 def detect_delimiter(file_extension):
     if file_extension == "csv":
-        return st.selectbox("Choose delimiter for CSV file", [',', '\t', ';', '|'], index=0)
+        return st.selectbox("Choose delimiter for CSV file", [',', '\t', ';', '|'], index=0, key=f"{file.name}")
     elif file_extension == "CSV":
-        return st.selectbox("Choose delimiter for CSV file", [',', '\t', ';', '|'], index=0)
+        return st.selectbox("Choose delimiter for CSV file", [',', '\t', ';', '|'], index=0, key=f"{file.name}")
     elif file_extension == "tsv":
         return "\t"
     elif file_extension == "txt":
-        return st.selectbox("Choose delimiter for TXT file", [',', '\t', ';', '|'], index=0)
-
-
-
-
-    
+        return st.selectbox("Choose delimiter for TXT file", [',', '\t', ';', '|'], index=0, key=f"{file.name}")
 
 
 
@@ -45,13 +40,13 @@ if files:
         file_extension = file.name.split(".")[-1].lower()
         delimiter = detect_delimiter(file_extension)
 
-        
+        skip_rows = st.number_input("Enter the number of rows to skip", min_value=0, max_value=30, step=1)
         st.subheader(f"Processing File: {file.name}")
-        df = pd.read_csv(file)
+        df = pd.read_csv(file, delimiter=delimiter, skiprows= skip_rows, on_bad_lines="skip")
         st.write("Preview of the file:")
         st.dataframe(df.head())
 
-        column_name = st.selectbox(f"Select the column to extract from {file.name}", df.columns, key=file.name)
+        column_name = st.selectbox(f"Select the column to extract from {file.name}", df.columns, key=f"column_select_{file.name}")
 
         # New column name 
         new_column_name = st.text_input("Enter the new column name",column_name, key=f"{file.name}_new_column") 
@@ -70,4 +65,5 @@ if files:
 
 else:
     st.info("Please upload a file or files to start")
+
 
